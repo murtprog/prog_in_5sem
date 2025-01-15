@@ -1,1 +1,31 @@
+import requests
+from PIL import Image
+from io import BytesIO
 
+
+server = "https://static-maps.yandex.ru/1.x/"
+
+stadiums_location = {
+    "Лужники": "37.554191,55.715551",
+    "Спартак": "37.440262,55.818015",
+    "Динамо": "37.559809,55.791540"
+}
+
+params = {
+    "spn": "0.1,0.1",
+    "l": "map",
+    "size": "600,400",
+}
+
+stadiums = []
+for i in stadiums_location:
+    stadiums.append(f"{stadiums_location[i]},pmntm")
+
+params["pt"] = "~".join(stadiums)
+
+response = requests.get(server, params=params)
+
+if response.status_code == 200:
+    Image.open(BytesIO(response.content)).show()
+else:
+    print("Ошибка:", response.status_code)
