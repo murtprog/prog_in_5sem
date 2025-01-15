@@ -1,0 +1,18 @@
+import requests
+
+server = "https://geocode-maps.yandex.ru/1.x/"
+api_key = "575294bb-32d0-46e9-b9a0-2ce18326ab28"
+
+address = input("Введите адрес: ")
+
+geocode_params = {
+    "geocode": address,
+    "format": "json",
+    "kind": "district",
+    "apikey": api_key
+    }
+
+response = requests.get(server, params=geocode_params).json()
+rayon = response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['SubAdministrativeAreaName']
+
+print(f"Район: {rayon}")
