@@ -1,0 +1,29 @@
+import requests
+
+server = "https://geocode-maps.yandex.ru/1.x/"
+api_key = "575294bb-32d0-46e9-b9a0-2ce18326ab28"
+
+cityes = input("Введите города через запятую: ")
+cityes = cityes.split(sep=",")
+
+most_south = ""
+min_lat = 91
+for city in cityes:
+    params = {
+        "geocode": city.strip(),
+        "format": "json",
+        "apikey": api_key
+    }
+    
+    response = requests.get(server, params=params).json()
+    if 'response' in response and 'GeoObjectCollection' in response['response']:
+        coords = response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
+        lon, lat = map(float, coords.split())
+        if lat < min_lat:
+            most_south = city.strip()
+            min_lat = lat
+
+if most_south:
+    print(f"Самый южный город: {most_south}")
+else:
+    print("Не удалось найти координаты для указанных городов.")
