@@ -1,0 +1,45 @@
+import requests
+import random
+from PIL import Image
+from io import BytesIO
+
+server = "https://static-maps.yandex.ru/1.x/"
+
+cities = [
+    {"city": "Уфа", "coord": "55.9678,54.7431"},
+    {"city": "Сочи", "coord": "43.5992,39.7257"},
+    {"city": "Москва", "coord": "37.6173,55.7558"},
+    {"city": "Казань", "coord": "49.0661,55.8304"},
+]
+
+def get_map(coord):
+    params = {
+        "ll": coord,
+        "spn": "0.1,0.1",
+        "l": "map",
+        "size": "600,400",
+
+    }
+    response = requests.get(server, params=params)
+    
+    if response.status_code == 200:
+        return response.content
+    else:
+        print("Ошибка:", response.status_code)
+        return None
+
+def slideshow(images):
+    for img_d in images:
+        print(f"Угадай город")
+        img = Image.open(BytesIO(img_d))
+        img.show()
+        
+images = []
+for city in cities:
+    city_coord = city["coord"]
+    image_d = get_map(city_coord)
+    if image_d:
+        images.append(image_d)
+
+random.shuffle(images) 
+slideshow(images)
