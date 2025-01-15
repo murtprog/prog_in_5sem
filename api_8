@@ -1,0 +1,41 @@
+import math
+import requests
+
+server = "https://geocode-maps.yandex.ru/1.x/"
+api_key = "575294bb-32d0-46e9-b9a0-2ce18326ab28"
+
+def coords(address):
+    params = {
+        "geocode": address,
+        "format": "json",
+        "apikey": api_key
+    }
+
+    response = requests.get(server, params=params).json()
+    pos = response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
+    return tuple(map(float, pos.split()))
+
+def lonlat_distance(a, b):
+    degree_to_meters_factor = 111 * 1000
+    a_lon, a_lat = a
+    b_lon, b_lat = b
+    radians_lattitude = math.radians((a_lat + b_lat) / 2.)
+    lat_lon_factor = math.cos(radians_lattitude)
+    dx = abs(a_lon - b_lon) * degree_to_meters_factor * lat_lon_factor
+    dy = abs(a_lat - b_lat) * degree_to_meters_factor
+    distance = math.sqrt(dx * dx + dy * dy)
+    return distance
+
+address_A = input("Введите адрес A: ")
+address_B = input("Введите адрес B: ")
+
+A = coords(address_A)
+B = coords(address_B)
+
+if A and B:
+    dist = lonlat_distance(A, B)
+    print(f"Расстояние: {dist / 1000}")
+else:
+    print("Не удалось рассчитать")
+
+#ура победа, я пошел спать
